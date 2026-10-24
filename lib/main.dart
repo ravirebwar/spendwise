@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'models/category.dart';
+import 'models/expense.dart';
+import 'utils/expense_x.dart';
+
 void main() {
   runApp(const SpendWiseApp());
 }
@@ -7,73 +11,87 @@ void main() {
 class SpendWiseApp extends StatelessWidget {
   const SpendWiseApp({super.key});
 
- 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SpendWise',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-      
         colorScheme: ColorScheme.fromSeed(
-seedColor: const Color(0xFF760A3A),
-      ),),
-            home: const MyHomePage(title: 'Flutter Demo Home Page'),
-
+          seedColor: const Color(0xFF760A3A), // TIU maroon
+        ),
+      ),
+      home: const WelcomeScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-
-
-  final String title;
+class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  final List<Expense> _expenses = [];
 
-  void _incrementCounter() {
+  void _addSampleExpense() {
     setState(() {
-
-      _counter += 2;
+      _expenses.add(Expense(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        title: 'Coffee',
+        amount: 2.5,
+        category: Category.food,
+        date: DateTime.now(),
+      ));
     });
   }
 
+  void _reset() => setState(_expenses.clear);
+
   @override
   Widget build(BuildContext context) {
- 
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-       
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-       
-        title: Text(widget.title),
+        title: const Text('SpendWise'),
+        actions: [
+          IconButton(
+            onPressed: _reset,
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Reset',
+          ),
+        ],
       ),
       body: Center(
-       
-        child: Column(
-  
-          mainAxisAlignment: .center,
-          children: [
-            const Text('Expenses recorded:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+        child: _buildSummary(scheme, text),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _buildFab(),
+    );
+  }
+
+  Widget _buildSummary(ColorScheme scheme, TextTheme text) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.account_balance_wallet,
+            size: 96, color: scheme.primary),
+        const SizedBox(height: 16),
+        Text('Welcome to SpendWise', style: text.headlineSmall),
+        const SizedBox(height: 8),
+        Text('${_expenses.length} expenses · '
+            '${_expenses.total.asMoney} USD'),
+      ],
+    );
+  }
+
+  Widget _buildFab() {
+    return FloatingActionButton.extended(
+      onPressed: _addSampleExpense,
+      icon: const Icon(Icons.add),
+      label: const Text('Add coffee'),
     );
   }
 }
