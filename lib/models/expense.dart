@@ -1,77 +1,67 @@
-import 'category.dart';
+import 'package:flutter/cupertino.dart';
 
 class Expense {
-  final String id;
   final String title;
-  final double amount;
-  final Category category;
+  final int amount;
+  final String category;
   final DateTime date;
-  final String? note;
-
-  const Expense({
-    required this.id,
+  
+  Expense({
     required this.title,
     required this.amount,
     required this.category,
-    required this.date,
-    this.note,
+    required this.date
   });
 
-  bool get isLarge => amount >= 50;
-
-  Expense copyWith({
-    String? title,
-    double? amount,
-    Category? category,
-    DateTime? date,
-    String? note,
-  }) {
-    return Expense(
-      id: id,
-      title: title ?? this.title,
-      amount: amount ?? this.amount,
-      category: category ?? this.category,
-      date: date ?? this.date,
-      note: note ?? this.note,
-    );
-  }
-
-  Map<String, Object?> toMap() => {
-        'id': id,
-        'title': title,
-        'amount': amount,
-        'category': category.name,
-        'date': date.toIso8601String(),
-        'note': note,
-      };
-
-  factory Expense.fromMap(Map<String, Object?> map) {
-    return Expense(
-      id: map['id'] as String,
-      title: map['title'] as String,
-      amount: (map['amount'] as num).toDouble(),
-      category: Category.fromName(map['category'] as String?),
-      date: DateTime.parse(map['date'] as String),
-      note: map['note'] as String?,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Expense &&
-          other.id == id &&
-          other.title == title &&
-          other.amount == amount &&
-          other.category == category &&
-          other.date == date &&
-          other.note == note;
-
-  @override
-  int get hashCode =>
-      Object.hash(id, title, amount, category, date, note);
-
-  @override
-  String toString() =>
-      'Expense($title, $amount, ${category.name}, ${date.toIso8601String()})';
+@override
+String toString() => '$title ($category): ${formatIqd(amount)}';  
 }
+
+final List<Expense> sampleExpenses = [
+  Expense(title: 'Lunch', amount: 8000,
+      category: 'Food', date: DateTime(2026, 10, 12)),
+  Expense(title: 'Bus ticket', amount: 1500,
+      category: 'Transport', date: DateTime(2026, 10, 12)),
+  Expense(title: 'Internet bill', amount: 35000,
+      category: 'Bills', date: DateTime(2026, 10, 10)),
+  Expense(title: 'Cinema', amount: 12000,
+      category: 'Fun', date: DateTime(2026, 10, 9)),
+        Expense(title: 'Lunch', amount: 8000,
+      category: 'Food', date: DateTime(2026, 10, 12)),
+  Expense(title: 'Bus ticket', amount: 1500,
+      category: 'Transport', date: DateTime(2026, 10, 12)),
+  Expense(title: 'Internet bill', amount: 35000,
+      category: 'Bills', date: DateTime(2026, 10, 10)),
+  Expense(title: 'Cinema', amount: 12000,
+      category: 'Fun', date: DateTime(2026, 10, 9)),
+        Expense(title: 'Lunch', amount: 8000,
+      category: 'Food', date: DateTime(2026, 10, 12)),
+  Expense(title: 'Bus ticket', amount: 1500,
+      category: 'Transport', date: DateTime(2026, 10, 12)),
+  Expense(title: 'Internet bill', amount: 35000,
+      category: 'Bills', date: DateTime(2026, 10, 10)),
+  Expense(title: 'Cinema', amount: 12000,
+      category: 'Fun', date: DateTime(2026, 10, 9)),
+];
+
+int totalOf(List<Expense> expenses){
+  int total = 0;
+  for (final e in expenses){
+    total += e.amount;
+  }
+  return total;
+}
+
+String formatIqd(int amount){
+  final digits = amount.toString();
+  String result = ' ';
+  for(int i = 0; i < digits.length; i++){
+    final left = digits.length -i;
+    if (i > 0 && left % 3 == 0){
+      result += ',';
+    }
+    result += digits[i];
+  }
+  return 'IQD $result';
+}
+
